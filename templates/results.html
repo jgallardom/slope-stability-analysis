@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slope Stability Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Slope Stability Analysis Results</h1>
+        <div class="results-grid">
+            <div class="result-card">
+                <h3>Factor of Safety</h3>
+                <div class="fos-value {% if fos >= 1.5 %}fos-safe{% elif fos >= 1.0 %}fos-warning{% else %}fos-danger{% endif %}">
+                    {{ "%.2f"|format(fos) }}
+                </div>
+                <p>
+                    {% if fos >= 1.5 %}
+                        ✅ The slope is stable with adequate safety margin
+                    {% elif fos >= 1.0 %}
+                        ⚠️ The slope is marginally stable
+                    {% else %}
+                        ❌ The slope is unstable
+                    {% endif %}
+                </p>
+            </div>
+            <div class="result-card">
+                <h3>Critical Circle Properties</h3>
+                <p>Center: ({{ "%.2f"|format(center[0]) }}, {{ "%.2f"|format(center[1]) }})</p>
+                <p>Radius: {{ "%.2f"|format(radius) }} m</p>
+            </div>
+        </div>
+        
+        <div class="result-card">
+            <h3>Input Parameters</h3>
+            <table class="parameter-table">
+                <tr>
+                    <th>Parameter</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Cohesion (c)</td>
+                    <td>{{ cohesion }} kPa</td>
+                </tr>
+                <tr>
+                    <td>Friction Angle (φ)</td>
+                    <td>{{ friction }}°</td>
+                </tr>
+                <tr>
+                    <td>Unit Weight (γ)</td>
+                    <td>{{ unit_weight }} kN/m³</td>
+                </tr>
+                <tr>
+                    <td>Slope Angle</td>
+                    <td>{{ slope_angle }}°</td>
+                </tr>
+                <tr>
+                    <td>Slope Height</td>
+                    <td>{{ height }} m</td>
+                </tr>
+            </table>
+        </div>
+
+        {% if image_path %}
+        <div class="result-card">
+            <h3>Failure Surface Visualization</h3>
+            <img src="{{ url_for('static', filename=image_path) }}" alt="Failure Surface" style="width: 100%; max-width: 800px; margin: 0 auto; display: block;">
+        </div>
+        {% endif %}
+
+        <a href="{{ url_for('index') }}" class="btn">⬅️ New Analysis</a>
+    </div>
+</body>
+</html> 
