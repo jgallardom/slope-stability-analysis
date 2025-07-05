@@ -6,7 +6,12 @@ build-backend = "setuptools.build_meta"
 name = "slope-stability-analysis"
 version = "0.1.0"
 description = "A web application for slope stability analysis"
-requires-python = ">=3.11"
+authors = [
+    {name = "jgallardom", email = "jgallardom@live.com"}
+]
+requires-python = ">=3.11.8"
+readme = "README.md"
+license = {text = "MIT"}
 dependencies = [
     "flask==2.2.3",
     "werkzeug==2.2.3",
@@ -19,4 +24,10 @@ dependencies = [
     "pyparsing==3.0.9",
     "python-dateutil==2.8.2",
     "six==1.16.0"
-] 
+]
+
+[project.urls]
+Repository = "https://github.com/jgallardom/slope-stability-analysis.git"
+
+[tool.setuptools]
+packages = ["slope_stability"] 
