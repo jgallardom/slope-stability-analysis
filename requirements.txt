@@ -1,5 +1,5 @@
 wheel==0.42.0
-setuptools==65.5.1
+setuptools==69.0.3
 flask==2.2.3
 numpy==1.25.2
 werkzeug==2.2.3
