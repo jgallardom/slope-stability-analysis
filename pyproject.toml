@@ -9,7 +9,7 @@ description = "A web application for slope stability analysis"
 authors = [
     {name = "jgallardom", email = "jgallardom@live.com"}
 ]
-requires-python = ">=3.11.8"
+requires-python = ">=3.11.0"
 readme = "README.md"
 license = {text = "MIT"}
 dependencies = [

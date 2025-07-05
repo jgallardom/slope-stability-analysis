@@ -16,6 +16,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from slope_stability.calculator import find_critical_circle
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 # Configure matplotlib to use Agg backend
 plt.switch_backend('Agg')
@@ -207,6 +212,10 @@ def index():
 def calculate():
     """Handle calculation request and return results."""
     try:
+        # Log incoming request data
+        logger.debug(f"Received form data: {request.form}")
+        
+        # Parse input parameters
         params = {
             'height': float(request.form['height']),
             'slopeAngle': float(request.form['slopeAngle']),
@@ -215,27 +224,63 @@ def calculate():
             'unitWeight': float(request.form['unitWeight'])
         }
         
+        # Log parsed parameters
+        logger.debug(f"Parsed parameters: {params}")
+        
         # Validate input parameters
         if params['height'] <= 0 or params['slopeAngle'] <= 0 or params['slopeAngle'] >= 90:
-            raise ValueError("Invalid height or slope angle")
+            raise ValueError("Invalid height or slope angle. Height must be positive and slope angle must be between 0 and 90 degrees.")
         if params['friction'] < 0 or params['friction'] >= 90:
-            raise ValueError("Invalid friction angle")
+            raise ValueError("Invalid friction angle. Must be between 0 and 90 degrees.")
         if params['cohesion'] < 0 or params['unitWeight'] <= 0:
-            raise ValueError("Invalid cohesion or unit weight")
-            
-        center, radius, fos = find_critical_circle(params)
+            raise ValueError("Invalid cohesion or unit weight. Both must be positive values.")
         
-        return jsonify({
+        logger.debug("Input validation passed")
+            
+        # Call calculator with unpacked parameters
+        logger.debug("Calling find_critical_circle with parameters:")
+        logger.debug(f"cohesion={params['cohesion']}, friction={params['friction']}, "
+                    f"unitWeight={params['unitWeight']}, slopeAngle={params['slopeAngle']}, "
+                    f"height={params['height']}")
+        
+        center, radius, fos = find_critical_circle(
+            params['cohesion'],
+            params['friction'],
+            params['unitWeight'],
+            params['slopeAngle'],
+            params['height']
+        )
+        
+        logger.debug(f"find_critical_circle returned: center={center}, radius={radius}, fos={fos}")
+        
+        # Create visualization
+        logger.debug("Creating visualization")
+        image_path = plot_slope_analysis(center, radius, params)
+        logger.debug(f"Visualization saved to: {image_path}")
+        
+        response_data = {
             'success': True,
             'center': {'x': float(center[0]), 'y': float(center[1])},
             'radius': float(radius),
-            'fos': float(fos)
-        })
+            'fos': float(fos),
+            'image': image_path
+        }
+        logger.debug(f"Sending response: {response_data}")
+        
+        return jsonify(response_data)
         
     except ValueError as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
+        error_msg = f"Validation error: {str(e)}"
+        logger.warning(error_msg)
+        return jsonify({'success': False, 'error': error_msg}), 400
     except Exception as e:
-        return jsonify({'success': False, 'error': "Calculation error occurred"}), 500
+        import traceback
+        error_msg = f"Calculation error: {str(e)}\n{traceback.format_exc()}"
+        logger.error(error_msg)
+        return jsonify({
+            'success': False, 
+            'error': f"Calculation error: {str(e)}"
+        }), 500
 
 if __name__ == '__main__':
     # Use environment variables for configuration
