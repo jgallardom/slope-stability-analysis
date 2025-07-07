@@ -23,7 +23,10 @@ dependencies = [
     "kiwisolver==1.4.4",
     "pyparsing==3.0.9",
     "python-dateutil==2.8.2",
-    "six==1.16.0"
+    "six==1.16.0",
+    "tqdm>=4.66.1",
+    "jupyter>=1.0.0",
+    "notebook>=7.0.6"
 ]
 
 [project.urls]
