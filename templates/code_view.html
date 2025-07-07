@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slope Stability Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/python.min.js"></script>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Calculator Section -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0">Slope Stability Calculator</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="stabilityForm" onsubmit="calculateStability(event)">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="height" class="form-label">Height (m)</label>
+                                    <input type="number" class="form-control" id="height" name="height" 
+                                           step="0.1" min="0.1" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="slopeAngle" class="form-label">Slope (°)</label>
+                                    <input type="number" class="form-control" id="slopeAngle" name="slopeAngle"
+                                           step="0.1" min="0.1" max="89.9" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="cohesion" class="form-label">Cohesion (kPa)</label>
+                                    <input type="number" class="form-control" id="cohesion" name="cohesion"
+                                           step="0.1" min="0" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="friction" class="form-label">Friction (°)</label>
+                                    <input type="number" class="form-control" id="friction" name="friction"
+                                           step="0.1" min="0" max="89.9" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="unitWeight" class="form-label">Unit Weight (kN/m³)</label>
+                                    <input type="number" class="form-control" id="unitWeight" name="unitWeight"
+                                           step="0.1" min="0.1" required>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-primary">Calculate</button>
+                                <button type="reset" class="btn btn-secondary">Reset</button>
+                            </div>
+                        </form>
+                        
+                        <div id="results" class="mt-4" style="display: none;">
+                            <h4>Results</h4>
+                            <div class="alert alert-info">
+                                <p><strong>Factor of Safety:</strong> <span id="fos"></span></p>
+                                <p><strong>Critical Circle:</strong> (<span id="centerX"></span>, <span id="centerY"></span>)</p>
+                                <p><strong>Radius:</strong> <span id="radius"></span> m</p>
+                            </div>
+                            <div id="plot" class="mt-3"></div>
+                        </div>
+                        
+                        <div id="error" class="alert alert-danger mt-4" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Section -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h2 class="mb-0">Implementation Details</h2>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs code-tabs" id="codeTabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="geometry-tab" data-bs-toggle="tab" href="#geometry" role="tab">
+                                    Geometry
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="compute-slice-properties-tab" data-bs-toggle="tab" href="#compute-slice-properties" role="tab">
+                                    Slice Properties
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="calculate-slice-forces-tab" data-bs-toggle="tab" href="#calculate-slice-forces" role="tab">
+                                    Slice Forces
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="stability-tab" data-bs-toggle="tab" href="#stability" role="tab">
+                                    Stability
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="visualization-tab" data-bs-toggle="tab" href="#visualization" role="tab">
+                                    Visualization
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="app-tab" data-bs-toggle="tab" href="#app" role="tab">
+                                    App
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content code-content mt-3" id="codeContent">
+                            <div class="tab-pane fade show active" id="geometry" role="tabpanel">
+                                <div class="code-description mb-3">
+                                    <h4>Slope Geometry Module</h4>
+                                    <p>Handles basic geometric calculations for defining the slope shape and surface points.</p>
+                                </div>
+                                <pre><code class="language-python">{{ code_files.geometry }}</code></pre>
+                            </div>
+                            <div class="tab-pane fade" id="compute-slice-properties" role="tabpanel">
+                                <div class="code-description mb-3">
+                                    <h4>Slice Properties Calculator</h4>
+                                    <p>Computes geometric properties of a single slice in the method of slices.</p>
+                                </div>
+                                <pre><code class="language-python">{{ code_files.compute_slice_properties }}</code></pre>
+                            </div>
+                            <div class="tab-pane fade" id="calculate-slice-forces" role="tabpanel">
+                                <div class="code-description mb-3">
+                                    <h4>Slice Forces Calculator</h4>
+                                    <p>Calculates forces and moments for a single slice in the method of slices.</p>
+                                </div>
+                                <pre><code class="language-python">{{ code_files.calculate_slice_forces }}</code></pre>
+                            </div>
+                            <div class="tab-pane fade" id="stability" role="tabpanel">
+                                <div class="code-description mb-3">
+                                    <h4>Stability Analysis Module</h4>
+                                    <p>Core stability calculations using the Method of Slices to find the critical failure surface.</p>
+                                </div>
+                                <pre><code class="language-python">{{ code_files.stability }}</code></pre>
+                            </div>
+                            <div class="tab-pane fade" id="visualization" role="tabpanel">
+                                <div class="code-description mb-3">
+                                    <h4>Visualization Module</h4>
+                                    <p>Handles all plotting and visualization functions for the slope stability analysis.</p>
+                                </div>
+                                <pre><code class="language-python">{{ code_files.visualization }}</code></pre>
+                            </div>
+                            <div class="tab-pane fade" id="app" role="tabpanel">
+                                <div class="code-description mb-3">
+                                    <h4>Web Application</h4>
+                                    <p>Simple Flask application that connects the user interface with the analysis modules.</p>
+                                </div>
+                                <pre><code class="language-python">{{ code_files.app }}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-python.min.js"></script>
+    <script>
+        async function calculateStability(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const resultsDiv = document.getElementById('results');
+            const errorDiv = document.getElementById('error');
+            const plotDiv = document.getElementById('plot');
+            
+            try {
+                const response = await fetch('/calculate', {
+                    method: 'POST',
+                    body: new FormData(form)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('fos').textContent = data.fos.toFixed(3);
+                    document.getElementById('centerX').textContent = data.center.x.toFixed(2);
+                    document.getElementById('centerY').textContent = data.center.y.toFixed(2);
+                    document.getElementById('radius').textContent = data.radius.toFixed(2);
+                    
+                    if (data.plot_image) {
+                        plotDiv.innerHTML = `<img src="${data.plot_image}" class="img-fluid" alt="Slope Analysis Plot">`;
+                    }
+                    
+                    resultsDiv.style.display = 'block';
+                    errorDiv.style.display = 'none';
+                } else {
+                    errorDiv.textContent = data.error;
+                    errorDiv.style.display = 'block';
+                    resultsDiv.style.display = 'none';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'An error occurred while processing your request.';
+                errorDiv.style.display = 'block';
+                resultsDiv.style.display = 'none';
+            }
+        }
+
+        // Initialize Prism.js syntax highlighting
+        Prism.highlightAll();
+    </script>
+</body>
+</html> 
