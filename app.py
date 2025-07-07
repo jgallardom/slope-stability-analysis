@@ -11,12 +11,15 @@ Main components:
 4. Web interface for input/output
 """
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, render_template_string
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 from slope_stability.calculator import find_critical_circle
 import logging
+import math
+import io
+import base64
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -207,6 +210,41 @@ def plot_slope_analysis(center, radius, params):
 def index():
     """Render the input form."""
     return render_template('input.html')
+
+@app.route('/view_code')
+def show_code():
+    with open("slope_stability/my_script.py", "r") as f:
+        code = f.read()
+    return render_template_string("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Slope Stability Analysis Code</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            pre {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                overflow-x: auto;
+            }
+            .container {
+                margin-top: 30px;
+                margin-bottom: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1 class="mb-4">Slope Stability Analysis Source Code</h1>
+            <div class="mb-3">
+                <a href="/" class="btn btn-primary">Back to Calculator</a>
+            </div>
+            <pre><code>{{ code }}</code></pre>
+        </div>
+    </body>
+    </html>
+    """, code=code)
 
 @app.route('/calculate', methods=['POST'])
 def calculate():
