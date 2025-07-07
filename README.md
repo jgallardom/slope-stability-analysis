@@ -1,14 +1,58 @@
-# Slope Stability Analysis Web Application
+# Slope Stability Analysis
 
-A web-based application for performing slope stability analysis using the Method of Slices (Fellenius/Ordinary Method). The application finds the critical failure surface and calculates the minimum Factor of Safety for a given slope configuration.
+A web application and interactive notebook for slope stability analysis using the method of slices.
+
+## Web Application
+
+The web application provides a simple interface for performing slope stability calculations. It is deployed at:
+https://slope-stability-analysis.onrender.com
+
+## Interactive Jupyter Notebook
+
+For a more detailed analysis and educational purposes, you can access the interactive Jupyter notebook at:
+https://slope-stability-jupyter.onrender.com
+
+The notebook includes:
+- Detailed mathematical explanations
+- Interactive visualizations
+- Sensitivity analysis tools
+- Example calculations
+
+Note: You will need the access token provided in the deployment to access the notebook.
+
+## Local Development
+
+To run locally:
+
+1. Clone the repository:
+```bash
+git clone https://github.com/jgallardom/slope-stability-analysis.git
+cd slope-stability-analysis
+```
+
+2. Install dependencies:
+```bash
+pip install -e .
+```
+
+3. Run the web application:
+```bash
+flask run
+```
+
+4. Run Jupyter notebook (optional):
+```bash
+jupyter lab
+```
 
 ## Features
 
-- Interactive web interface for input parameters
-- Real-time calculation of Factor of Safety
-- Client-side input validation
-- Responsive design for mobile and desktop
-- Modern UI with Bootstrap styling
+- Web interface for quick calculations
+- Interactive Jupyter notebook for detailed analysis
+- Parallel processing for faster calculations
+- Progress tracking for long-running analyses
+- Sensitivity analysis tools
+- Visualization of failure surfaces
 
 ## Prerequisites
 
