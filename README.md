@@ -24,7 +24,7 @@ The application uses:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/slope-stability-analysis.git
+git clone https://github.com/jgallardom/slope-stability-analysis.git
 cd slope-stability-analysis
 ```
 
