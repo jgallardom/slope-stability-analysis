@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: slope-stability-analysis
+    env: python
+    buildCommand: pip install -e .
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: FLASK_APP
+        value: app.py
+      - key: FLASK_ENV
+        value: production
+
+  - type: web
+    name: slope-stability-jupyter
+    env: python
+    buildCommand: pip install -e .
+    startCommand: jupyter lab --ip=0.0.0.0 --port=$PORT --no-browser --allow-root --NotebookApp.token='your-secure-token' --notebook-dir=notebooks
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: JUPYTER_TOKEN
+        generateValue: true # Render will generate a secure token
+    autoDeploy: false # Prevents automatic deployments on every push 
